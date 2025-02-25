@@ -47,34 +47,32 @@ const MAX_RETRIES = 5;
 // OMDb API query
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = [
-    "http://localhost:5173", // For local development
-    "https://sivonpearson.github.io", // GitHub Pages origin
+    "http://localhost:5173", // Local development
+    "https://sivonpearson.github.io", // GitHub Pages frontend
   ];
 
   const origin = req.headers.origin;
 
-  // Handle OPTIONS preflight request
-  if (req.method === "OPTIONS" && origin) {
-    if (allowedOrigins.includes(origin)) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Methods", "GET");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-      return res.status(200).end();
-    } else {
-      return res.status(403).json({ error: "Forbidden" });
-    }
+  console.log(origin);
+
+  // Set CORS headers for every request
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle preflight (OPTIONS) request
+  if (req.method === "OPTIONS") {
+    return res.status(204).end(); // No content, successful preflight
   }
 
+  // Ensure request is GET
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
   try {
-    // // Allow cross-origin requests from localhost frontend
-    // res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-    // res.setHeader("Access-Control-Allow-Methods", "GET");
-    // res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
     const apiKey = process.env.OMDB_API_KEY;
 
     if (!apiKey) {
@@ -97,9 +95,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log(search_response);
 
       if (!search_response.ok) {
-        return res
-          .status(search_response.status)
-          .json({ error: "Failed to fetch data from external API" });
+        continue;
+        // return res
+        //   .status(search_response.status)
+        //   .json({ error: "Failed to fetch data from external API" });
       }
 
       await sleep(1000);
@@ -128,9 +127,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         );
 
         if (!imdb_response.ok) {
-          return res
-            .status(imdb_response.status)
-            .json({ error: "Failed to fetch movie details from OMDb" });
+          //   return res
+          //     .status(imdb_response.status)
+          //     .json({ error: "Failed to fetch movie details from OMDb" });
+          continue;
         }
 
         const imdbData = await imdb_response.json();

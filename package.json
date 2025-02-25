@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "devDependencies": {
     "@types/node": "^22.13.5",
     "@types/random-words": "^1.1.4",

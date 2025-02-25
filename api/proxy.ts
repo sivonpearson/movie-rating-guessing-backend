@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { generate, count } from "random-words";
+import { generate } from "random-words";
 
 const base_url = `https://www.omdbapi.com`;
 

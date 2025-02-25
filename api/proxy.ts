@@ -46,10 +46,15 @@ const MAX_RETRIES = 5;
 
 // OMDb API query
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
   try {
-    if (req.method !== "GET") {
-      return res.status(405).json({ error: "Method Not Allowed" });
-    }
+    // Allow cross-origin requests from localhost frontend
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Methods", "GET");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
     const apiKey = process.env.OMDB_API_KEY;
 

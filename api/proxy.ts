@@ -106,7 +106,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const searchData = await search_response.json();
 
       if (searchData.Response === "False") {
-        return res.status(404).json({ error: "Movie not found" });
+        // return res.status(404).json({ error: "Movie not found" });
+        continue;
       }
 
       const movies = searchData.Search;
@@ -120,7 +121,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
 
       if (filtered_movies) {
-        const movie = movies[Math.floor(Math.random() * movies.length)];
+        const movie =
+          filtered_movies[Math.floor(Math.random() * filtered_movies.length)];
 
         const imdb_response = await fetch(
           encodeURL(base_url, get_byid_params(apiKey, movie.imdbID))
@@ -140,22 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           continue;
         }
 
-        console.log(imdbData);
-
-        /*
-        We want:
-        - Title
-        - Year
-        - Poster
-        - Genre
-        - Plot
-        - IMDb score (1-10)
-        - Rated
-        - Director
-        - Writer
-        - Actors
-        - Runtime
-        */
+        // console.log(imdbData);
 
         return res.status(200).json(imdbData);
       }
